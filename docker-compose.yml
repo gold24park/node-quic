@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+    quic-server:
+        container_name: quic-server
+        hostname: "${SERVER_HOST}"
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: quic/out/Release/node src/server.js
+        ports:
+            - "${SERVER_PORT}:1234/udp"
+        volumes:
+            - "./src:/src"
+            - "./cert:/cert"
+        environment:
+            PORT: "${SERVER_PORT}"
+    quic-client:
+        container_name: quic-client
+        build:
+            context: .
+            dockerfile: Dockerfile
+        command: quic/out/Release/node src/client.js
+        ports:
+            - "${CLIENT_PORT}:5678/udp"
+        volumes:
+            - "./src:/src"
+            - "./cert:/cert"
+        environment:
+            PORT: "${CLIENT_PORT}"
+            SERVER_PORT: "${SERVER_PORT}"
+            SERVER_HOST: "${SERVER_HOST}"
